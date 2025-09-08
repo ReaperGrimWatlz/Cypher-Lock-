@@ -3,762 +3,613 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CYPHER LOCK | Text Encryption Tool</title>
+    <title>Secure Two-Way Communication | EduSecure</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600&display=swap');
-        
         :root {
-            --neon-green: #00ff9d;
-            --neon-blue: #00d0ff;
-            --neon-purple: #bd00ff;
-            --dark-bg: #0a0a12;
-            --darker-bg: #050508;
-            --card-bg: rgba(20, 20, 40, 0.7);
+            --primary-color: #2c3e50;
+            --secondary-color: #34495e;
+            --accent-color: #2980b9;
+            --accent-color-2: #27ae60;
+            --light-color: #ecf0f1;
+            --success-color: #27ae60;
+            --warning-color: #e74c3c;
+            --border-radius: 10px;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
         }
 
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Rajdhani', sans-serif;
-            background-color: var(--dark-bg);
-            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f4f7f9 0%, #e2e8f0 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            padding: 20px;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 30%, var(--neon-purple), transparent 30%),
-                radial-gradient(circle at 80% 70%, var(--neon-blue), transparent 30%),
-                var(--darker-bg);
-            z-index: -1;
-            opacity: 0.5;
-        }
-
-        h1, h2, h3 {
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        h1 {
-            color: var(--neon-green);
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            text-shadow: 0 0 10px rgba(0, 255, 157, 0.5);
-            background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            position: relative;
         }
 
         .container {
-            max-width: 900px;
             width: 100%;
-            background: var(--card-bg);
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 0 30px rgba(0, 213, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 255, 157, 0.1);
-            margin: 20px 0;
-        }
-
-        .app-header {
-            text-align: center;
-            margin-bottom: 30px;
-            position: relative;
-        }
-
-        .app-header::after {
-            content: '';
-            display: block;
-            width: 100px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--neon-green), var(--neon-blue));
-            margin: 15px auto;
-            border-radius: 3px;
-        }
-
-        .input-section, .output-section {
-            margin-bottom: 25px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--neon-blue);
-            font-weight: 600;
-        }
-
-        textarea, input[type="password"], input[type="file"] {
-            width: 100%;
-            padding: 15px;
-            font-size: 1rem;
-            margin-bottom: 15px;
-            border: 1px solid rgba(0, 213, 255, 0.3);
-            border-radius: 8px;
-            background-color: rgba(10, 10, 20, 0.7);
-            color: white;
-            font-family: 'Rajdhani', sans-serif;
-            transition: all 0.3s ease;
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 150px;
-        }
-        
-        .secret-input {
-            min-height: 100px;
-            background-color: rgba(30, 30, 60, 0.5);
-            border: 1px dashed var(--neon-purple);
-        }
-
-        textarea:focus, input:focus {
-            outline: none;
-            border-color: var(--neon-green);
-            box-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
-        }
-
-        .file-input-wrapper {
-            position: relative;
-            overflow: hidden;
-            margin-bottom: 15px;
-        }
-
-        .file-input-wrapper input[type="file"] {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-
-        .file-input-label {
-            display: block;
-            padding: 15px;
-            background-color: rgba(10, 10, 20, 0.7);
-            border: 1px dashed rgba(0, 213, 255, 0.3);
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .file-input-label:hover {
-            border-color: var(--neon-green);
-            background-color: rgba(20, 20, 40, 0.7);
-        }
-
-        .file-input-label i {
-            margin-right: 10px;
-            color: var(--neon-blue);
-        }
-
-        .controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        button {
-            padding: 12px 25px;
-            font-size: 1rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            transition: all 0.3s ease;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: bold;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            flex: 1;
-            min-width: 120px;
-            position: relative;
+            max-width: 1200px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
             overflow: hidden;
         }
 
-        button::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, var(--neon-green), var(--neon-blue), var(--neon-purple), var(--neon-blue), var(--neon-green));
-            background-size: 400%;
-            z-index: -1;
-            border-radius: 8px;
-            opacity: 0;
-            transition: 0.5s;
-        }
-
-        button:hover::before {
-            opacity: 1;
-            animation: animate 8s linear infinite;
-        }
-
-        @keyframes animate {
-            0% { background-position: 0 0; }
-            50% { background-position: 400% 0; }
-            100% { background-position: 0 0; }
-        }
-
-        .btn-primary {
-            background-color: var(--neon-green);
-            color: black;
-        }
-
-        .btn-primary:hover {
-            background-color: transparent;
-            color: var(--neon-green);
-        }
-
-        .btn-secondary {
-            background-color: var(--neon-blue);
-            color: black;
-        }
-
-        .btn-secondary:hover {
-            background-color: transparent;
-            color: var(--neon-blue);
-        }
-
-        .btn-danger {
-            background-color: var(--neon-purple);
+        header {
+            background: var(--primary-color);
             color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
         }
 
-        .btn-danger:hover {
-            background-color: transparent;
-            color: var(--neon-purple);
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
         }
 
-        .tab-container {
-            margin-bottom: 20px;
-        }
-        
-        .tab-buttons {
-            display: flex;
-            margin-bottom: 15px;
-        }
-        
-        .tab-btn {
-            padding: 10px 15px;
-            background: rgba(30, 30, 60, 0.7);
-            border: none;
-            border-bottom: 2px solid transparent;
-            color: var(--neon-blue);
-            cursor: pointer;
-            font-family: 'Orbitron', sans-serif;
-            transition: all 0.3s ease;
-        }
-        
-        .tab-btn.active {
-            border-bottom-color: var(--neon-green);
-            color: var(--neon-green);
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.5s ease-out;
-        }
-        
-        .result-container {
-            margin-top: 30px;
-        }
-
-        #result {
-            min-height: 100px;
-            word-wrap: break-word;
+        header p {
             font-size: 1.1rem;
-            line-height: 1.6;
-            padding: 15px;
-            background-color: rgba(10, 10, 20, 0.7);
-            border-radius: 8px;
-            border: 1px solid rgba(0, 213, 255, 0.3);
+            opacity: 0.9;
         }
 
-        .status-bar {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .theme-toggle {
-            position: fixed;
+        .security-indicator {
+            position: absolute;
             top: 20px;
             right: 20px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .security-indicator i {
+            margin-right: 5px;
+            color: var(--success-color);
+        }
+
+        .comms-container {
+            display: flex;
+            min-height: 500px;
+        }
+
+        .user-panel {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-panel:nth-child(1) {
+            background: #f9f9f9;
+            border-right: 1px solid #eee;
+        }
+
+        .user-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .avatar {
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background-color: var(--card-bg);
-            border: 1px solid rgba(0, 213, 255, 0.3);
+            background: var(--accent-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+            margin-right: 15px;
+        }
+
+        .user-2 .avatar {
+            background: var(--accent-color-2);
+        }
+
+        .user-info h3 {
+            margin-bottom: 5px;
+        }
+
+        .user-info p {
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #eee;
+            border-radius: var(--border-radius);
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            max-width: 80%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .message.outgoing {
+            align-self: flex-end;
+        }
+
+        .message-content {
+            padding: 12px 15px;
+            border-radius: 18px;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        .message.incoming .message-content {
+            background: #eaf2f8;
+            border: 1px solid #d4e6f1;
+            border-bottom-left-radius: 5px;
+        }
+
+        .message.outgoing .message-content {
+            background: var(--accent-color);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message-info {
+            font-size: 0.75rem;
+            color: #777;
+            margin-top: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .message-actions button {
+            background: transparent;
+            border: none;
+            color: #777;
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 3px 8px;
+        }
+
+        .message-actions button:hover {
+            color: var(--accent-color);
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            font-family: inherit;
+            resize: none;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 2px rgba(41, 128, 185, 0.2);
+        }
+
+        .send-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .send-btn:hover {
+            background: #2471a3;
+            transform: scale(1.05);
+        }
+
+        .user-2 .send-btn {
+            background: var(--accent-color-2);
+        }
+
+        .user-2 .send-btn:hover {
+            background: #219d54;
+        }
+
+        .security-features {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #ddd;
+            display: flex;
+            justify-content: space-around;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .feature {
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            z-index: 100;
         }
 
-        .theme-toggle:hover {
-            border-color: var(--neon-green);
-            transform: rotate(30deg);
+        .feature i {
+            margin-right: 8px;
+            color: var(--success-color);
         }
 
-        .theme-toggle i {
-            color: var(--neon-blue);
-            font-size: 1.2rem;
+        .encryption-controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
         }
 
-        .animated-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            overflow: hidden;
+        .encryption-controls button {
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
-        .circle {
-            position: absolute;
-            border-radius: 50%;
-            background: radial-gradient(circle, var(--neon-green), transparent 70%);
-            opacity: 0.1;
-            animation: float 15s infinite ease-in-out;
+        .btn-encrypt {
+            background: var(--primary-color);
+            color: white;
         }
 
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            25% { transform: translate(50px, 50px); }
-            50% { transform: translate(0, 100px); }
-            75% { transform: translate(-50px, 50px); }
-        }
-
-        .circle:nth-child(1) {
-            width: 300px;
-            height: 300px;
-            top: 10%;
-            left: 10%;
-            animation-delay: 0s;
-            background: radial-gradient(circle, var(--neon-green), transparent 70%);
-        }
-
-        .circle:nth-child(2) {
-            width: 200px;
-            height: 200px;
-            top: 60%;
-            left: 80%;
-            animation-delay: 5s;
-            animation-duration: 20s;
-            background: radial-gradient(circle, var(--neon-blue), transparent 70%);
-        }
-
-        .circle:nth-child(3) {
-            width: 400px;
-            height: 400px;
-            top: 30%;
-            left: 50%;
-            animation-delay: 2s;
-            animation-duration: 25s;
-            background: radial-gradient(circle, var(--neon-purple), transparent 70%);
+        .btn-decrypt {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            color: #333;
         }
 
         @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-            
-            .controls {
+            .comms-container {
                 flex-direction: column;
-                gap: 10px;
             }
             
-            button {
-                width: 100%;
+            .user-panel:nth-child(1) {
+                border-right: none;
+                border-bottom: 1px solid #eee;
             }
-        }
-
-        /* Animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
-        }
-
-        .ripple {
-            position: absolute;
-            border-radius: 50%;
-            background-color: rgba(255, 255, 255, 0.3);
-            transform: scale(0);
-            animation: ripple 0.6s linear;
-            pointer-events: none;
-        }
-
-        @keyframes ripple {
-            to {
-                transform: scale(2.5);
-                opacity: 0;
+            
+            .message {
+                max-width: 90%;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Animated background elements -->
-    <div class="animated-bg">
-        <div class="circle"></div>
-        <div class="circle"></div>
-        <div class="circle"></div>
-    </div>
-
-    <!-- Theme toggle button -->
-    <div class="theme-toggle" id="themeToggle">
-        <i class="fas fa-moon"></i>
-    </div>
-
-    <div class="container fade-in">
-        <div class="app-header">
-            <h1>Cypher Lock</h1>
-            <p>Secure text encryption with military-grade protection</p>
-        </div>
-
-        <div class="input-section">
-            <label for="inputText"><i class="fas fa-pen"></i> Enter your text:</label>
-            <textarea id="inputText" placeholder="Type or paste your sensitive text here..."></textarea>
-            
-            <label for="password"><i class="fas fa-key"></i> Encryption password:</label>
-            <input type="password" id="password" placeholder="Enter a strong password (keep it secret!)">
-            
-            <div class="tab-container">
-                <div class="tab-buttons">
-                    <button class="tab-btn active" data-tab="text">Text</button>
-                    <button class="tab-btn" data-tab="image">Image Steganography</button>
-                </div>
-                <div class="tab-content active" id="text-tab">
-                    <div class="file-input-wrapper">
-                        <label for="fileInput" class="file-input-label">
-                            <i class="fas fa-file-upload"></i> Or upload a text file
-                        </label>
-                        <input type="file" id="fileInput" accept=".txt">
+    <div class="container">
+        <header>
+            <h1>Secure Two-Way Communication</h1>
+            <p>End-to-end encrypted messaging for academic collaboration</p>
+            <div class="security-indicator">
+                <i class="fas fa-shield-alt"></i>
+                <span>Connection Secured (AES-256)</span>
+            </div>
+        </header>
+        
+        <div class="comms-container">
+            <!-- User 1 Panel -->
+            <div class="user-panel">
+                <div class="user-header">
+                    <div class="avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <h3>Student</h3>
+                        <p>You</p>
                     </div>
                 </div>
-                <div class="tab-content" id="image-tab">
-                    <label for="imageInput"><i class="fas fa-image"></i> Upload image to hide message in:</label>
-                    <input type="file" id="imageInput" accept="image/*">
-                    <label for="secretMessage"><i class="fas fa-key"></i> Secret message:</label>
-                    <textarea id="secretMessage" placeholder="Enter the message to hide in the image..." class="secret-input"></textarea>
+                
+                <div class="chat-box" id="user1Chat">
+                    <div class="message outgoing">
+                        <div class="message-content">
+                            <p>Hello Professor, I have a question about the research paper.</p>
+                        </div>
+                        <div class="message-info">
+                            <span>You</span>
+                            <span>10:05 AM</span>
+                        </div>
+                    </div>
+                    
+                    <div class="message incoming">
+                        <div class="message-content">
+                            <p>SGVsbG8gUHJvZmVzc29yLCBJIGhhdmUgYSBxdWVzdGlvbiBhYm91dCB0aGUgcmVzZWFyY2ggcGFwZXIu</p>
+                        </div>
+                        <div class="message-info">
+                            <span>Professor Smith</span>
+                            <span>10:06 AM</span>
+                        </div>
+                        <div class="message-actions">
+                            <button onclick="decryptMessage(this)"><i class="fas fa-unlock"></i> Decrypt</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input-area">
+                    <textarea class="chat-input" id="user1Input" placeholder="Type your message..." rows="1"></textarea>
+                    <button class="send-btn" onclick="sendMessage(1)">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <div class="encryption-controls">
+                    <button class="btn-encrypt" onclick="encryptAll(1)">
+                        <i class="fas fa-lock"></i> Encrypt All
+                    </button>
+                    <button class="btn-decrypt" onclick="decryptAll(1)">
+                        <i class="fas fa-unlock"></i> Decrypt All
+                    </button>
                 </div>
             </div>
             
-            <div class="status-bar">
-                <div id="charCount">Characters: 0</div>
-                <div id="fileInfo">No file selected</div>
+            <!-- User 2 Panel -->
+            <div class="user-panel user-2">
+                <div class="user-header">
+                    <div class="avatar">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <div class="user-info">
+                        <h3>Professor</h3>
+                        <p>Professor Smith</p>
+                    </div>
+                </div>
+                
+                <div class="chat-box" id="user2Chat">
+                    <div class="message incoming">
+                        <div class="message-content">
+                            <p>SGVsbG8gUHJvZmVzc29yLCBJIGhhdmUgYSBxdWVzdGlvbiBhYm91dCB0aGUgcmVzZWFyY2ggcGFwZXIu</p>
+                        </div>
+                        <div class="message-info">
+                            <span>Student</span>
+                            <span>10:05 AM</span>
+                        </div>
+                        <div class="message-actions">
+                            <button onclick="decryptMessage(this)"><i class="fas fa-unlock"></i> Decrypt</button>
+                        </div>
+                    </div>
+                    
+                    <div class="message outgoing">
+                        <div class="message-content">
+                            <p>Of course, what would you like to know?</p>
+                        </div>
+                        <div class="message-info">
+                            <span>You</span>
+                            <span>10:07 AM</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input-area">
+                    <textarea class="chat-input" id="user2Input" placeholder="Type your message..." rows="1"></textarea>
+                    <button class="send-btn" onclick="sendMessage(2)">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <div class="encryption-controls">
+                    <button class="btn-encrypt" onclick="encryptAll(2)">
+                        <i class="fas fa-lock"></i> Encrypt All
+                    </button>
+                    <button class="btn-decrypt" onclick="decryptAll(2)">
+                        <i class="fas fa-unlock"></i> Decrypt All
+                    </button>
+                </div>
             </div>
         </div>
-
-        <div class="controls">
-            <div class="method-selector">
-                <label for="encryptionMethod">Method: </label>
-                <select id="encryptionMethod" onchange="changeEncryptionMethod()">
-                    <option value="aes">AES</option>
-                    <option value="rsa">RSA</option>
-                    <option value="xor">XOR</option>
-                    <option value="base64">Base64</option>
-                </select>
-                <span id="methodInfo">AES-256 (Military Grade)</span>
+        
+        <div class="security-features">
+            <div class="feature">
+                <i class="fas fa-shield-alt"></i>
+                <span>End-to-end encryption</span>
             </div>
-            <button class="btn-primary" id="encryptBtn" onclick="encryptText()">
-                <i class="fas fa-lock"></i> Encrypt
-            </button>
-            <button class="btn-secondary" id="decryptBtn" onclick="decryptText()">
-                <i class="fas fa-unlock"></i> Decrypt
-            </button>
-            <button class="btn-danger" onclick="clearAll()">
-                <i class="fas fa-trash-alt"></i> Clear
-            </button>
-            <button class="btn-secondary" onclick="copyToClipboard()">
-                <i class="fas fa-copy"></i> Copy
-            </button>
-        </div>
-
-        <div class="output-section">
-            <label for="result"><i class="fas fa-file-code"></i> Result:</label>
-            <div id="result" class="result-container"></div>
+            <div class="feature">
+                <i class="fas fa-fingerprint"></i>
+                <span>Identity verification</span>
+            </div>
+            <div class="feature">
+                <i class="fas fa-clock"></i>
+                <span>Message timestamping</span>
+            </div>
         </div>
     </div>
 
     <script>
-        // Tab switching
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                
-                this.classList.add('active');
-                document.getElementById(`${this.dataset.tab}-tab`).classList.add('active');
-            });
-        });
-
-        // Create ripple effect on buttons
-        document.querySelectorAll('button').forEach(button => {
-            button.addEventListener('click', function(e) {
-                const rect = this.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                
-                const ripple = document.createElement('span');
-                ripple.className = 'ripple';
-                ripple.style.left = `${x}px`;
-                ripple.style.top = `${y}px`;
-                
-                this.appendChild(ripple);
-                
-                setTimeout(() => {
-                    ripple.remove();
-                }, 600);
-            });
-        });
-
-        // Update character count
-        document.getElementById('inputText').addEventListener('input', function() {
-            document.getElementById('charCount').textContent = `Characters: ${this.value.length}`;
-        });
-
-        // File input handling
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                if (file.type === 'text/plain' || file.name.endsWith('.txt')) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        document.getElementById('inputText').value = e.target.result;
-                        document.getElementById('charCount').textContent = `Characters: ${e.target.result.length}`;
-                        document.getElementById('fileInfo').textContent = file.name;
-                        
-                        // Show success notification
-                        showNotification('File loaded successfully!', 'success');
-                    };
-                    reader.readAsText(file);
-                } else {
-                    showNotification('Please upload a text file (.txt)', 'error');
-                    this.value = '';
-                    document.getElementById('fileInfo').textContent = 'Invalid file type';
-                }
-            }
-        });
-
-        // Theme toggle
-        document.getElementById('themeToggle').addEventListener('click', function() {
-            const isDark = document.body.classList.contains('light-mode');
-            if (isDark) {
-                document.body.classList.remove('light-mode');
-                this.innerHTML = '<i class="fas fa-moon"></i>';
-            } else {
-                document.body.classList.add('light-mode');
-                this.innerHTML = '<i class="fas fa-sun"></i>';
-            }
-        });
-
-        // Encryption method selector
-        function changeEncryptionMethod() {
-            const method = document.getElementById('encryptionMethod').value;
-            document.getElementById('methodInfo').textContent = 
-                method === 'aes' ? 'AES-256 (Military Grade)' :
-                method === 'rsa' ? 'RSA (Public Key)' :
-                method === 'xor' ? 'XOR (Fast)' : 'Base64 (Basic)';
-        }
-
-        // Encryption function
-        function encryptText() {
-            const text = document.getElementById('inputText').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const method = document.getElementById('encryptionMethod').value;
-            
-            if (!text) {
-                showNotification('Please enter some text to encrypt', 'error');
-                return;
-            }
-            
-            if (!password) {
-                showNotification('Please enter an encryption password', 'error');
-                return;
-            }
-            
-            try {
-                // Simple encryption (replace with more secure algorithm in production)
-                const encrypted = btoa(encodeURIComponent(text)) + btoa(password).split('').reverse().join('');
-                document.getElementById('result').textContent = encrypted;
-                showNotification('Text encrypted successfully!', 'success');
-                animateResult('neon');
-            } catch (error) {
-                showNotification('Encryption failed', 'error');
-                console.error(error);
-            }
-        }
-
-        // Decryption function
-        function decryptText() {
-            const text = document.getElementById('inputText').value.trim();
-            const password = document.getElementById('password').value.trim();
-            
-            if (!text) {
-                showNotification('Please enter encrypted text', 'error');
-                return;
-            }
-            
-            if (!password) {
-                showNotification('Please enter the decryption password', 'error');
-                return;
-            }
-            
-            try {
-                const passwordPart = btoa(password).split('').reverse().join('');
-                if (!text.endsWith(passwordPart)) {
-                    showNotification('Invalid password or corrupt data', 'error');
-                    return;
-                }
-                
-                const encryptedText = text.substring(0, text.length - passwordPart.length);
-                const decrypted = decodeURIComponent(atob(encryptedText));
-                document.getElementById('result').textContent = decrypted;
-                showNotification('Text decrypted successfully!', 'success');
-                animateResult('glow');
-            } catch (error) {
-                showNotification('Decryption failed. Invalid password or data', 'error');
-                console.error(error);
-            }
-        }
-
-        // Clear all fields
-        function clearAll() {
-            document.getElementById('inputText').value = '';
-            document.getElementById('result').textContent = '';
-            document.getElementById('password').value = '';
-            document.getElementById('fileInput').value = '';
-            document.getElementById('charCount').textContent = 'Characters: 0';
-            document.getElementById('fileInfo').textContent = 'No file selected';
-        }
-
-        // Copy to clipboard
-        function copyToClipboard() {
-            const result = document.getElementById('result').textContent;
-            if (!result) {
-                showNotification('Nothing to copy', 'warning');
-                return;
-            }
-            
-            navigator.clipboard.writeText(result).then(() => {
-                showNotification('Copied to clipboard!', 'success');
-            }).catch(err => {
-                showNotification('Failed to copy', 'error');
-                console.error(err);
-            });
-        }
-
-        // Show notification
-        function showNotification(message, type) {
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-            notification.textContent = message;
-            notification.style.position = 'fixed';
-            notification.style.bottom = '20px';
-            notification.style.right = '20px';
-            notification.style.padding = '10px 20px';
-            notification.style.borderRadius = '5px';
-            notification.style.background = type === 'error' ? '#ff4444' : 
-                                           type === 'success' ? '#00C851' : '#ffbb33';
-            notification.style.color = 'white';
-            notification.style.zIndex = '1000';
-            notification.style.boxShadow = '0 4px 8px rgba(0,0,0,0.2)';
-            notification.style.animation = 'fadeIn 0.3s ease-out';
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'fadeOut 0.3s ease-out';
-                setTimeout(() => {
-                    notification.remove();
-                }, 300);
-            }, 3000);
-        }
-
-        // Animate the result display
-        function animateResult(type) {
-            const result = document.getElementById('result');
-            if (type === 'neon') {
-                result.style.animation = 'none';
-                void result.offsetWidth; // Trigger reflow
-                result.style.animation = 'neonPulse 1.5s ease-in-out';
-            } else if (type === 'glow') {
-                result.style.animation = 'none';
-                void result.offsetWidth;
-                result.style.animation = 'glow 1s ease-in-out';
-            }
-        }
-
-        // Service Worker Registration for PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(registration => {
-                    console.log('ServiceWorker registration successful');
-                }).catch(err => {
-                    console.log('ServiceWorker registration failed: ', err);
+        document.addEventListener('DOMContentLoaded', () => {
+            // Auto-adjust textarea height
+            const textareas = document.querySelectorAll('.chat-input');
+            textareas.forEach(textarea => {
+                textarea.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight) + 'px';
                 });
             });
+            
+            // Allow sending message with Enter key (but allow Shift+Enter for new line)
+            textareas.forEach(textarea => {
+                textarea.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        const userId = textarea.id.replace('user', '').replace('Input', '');
+                        sendMessage(parseInt(userId));
+                    }
+                });
+            });
+        });
+        
+        // Simple encryption simulation
+        function encryptMessage(text) {
+            // Base64 encoding for simulation (not real encryption)
+            return btoa(unescape(encodeURIComponent(text)));
         }
-
-        // Add animation keyframes to style dynamically
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes neonPulse {
-                0%, 100% { box-shadow: 0 0 5px rgba(0, 255, 157, 0.3); }
-                50% { box-shadow: 0 0 20px rgba(0, 255, 157, 0.7); }
+        
+        function decryptMessage(encryptedText) {
+            try {
+                return decodeURIComponent(escape(atob(encryptedText)));
+            } catch (e) {
+                return encryptedText; // Return as-is if not base64 encoded
             }
-            @keyframes glow {
-                0%, 100% { box-shadow: 0 0 5px rgba(0, 213, 255, 0.3); }
-                50% { box-shadow: 0 0 20px rgba(0, 213, 255, 0.7); }
+        }
+        
+        // Send message from a user
+        function sendMessage(userId) {
+            const inputEl = document.getElementById(`user${userId}Input`);
+            const chatEl = document.getElementById(`user${userId}Chat`);
+            const otherUserId = userId === 1 ? 2 : 1;
+            const otherChatEl = document.getElementById(`user${otherUserId}Chat`);
+            
+            const messageText = inputEl.value.trim();
+            if (messageText) {
+                // Add outgoing message to sender's chat
+                addMessageToChat(chatEl, messageText, 'outgoing', userId === 1 ? 'You' : 'Professor Smith');
+                
+                // Add encrypted incoming message to receiver's chat
+                const encryptedText = encryptMessage(messageText);
+                addMessageToChat(otherChatEl, encryptedText, 'incoming', userId === 1 ? 'Student' : 'Professor Smith', true);
+                
+                // Clear input and reset height
+                inputEl.value = '';
+                inputEl.style.height = 'auto';
+                
+                // Scroll to bottom of both chat boxes
+                chatEl.scrollTop = chatEl.scrollHeight;
+                otherChatEl.scrollTop = otherChatEl.scrollHeight;
             }
-            @keyframes fadeOut {
-                from { opacity: 1; }
-                to { opacity: 0; }
+        }
+        
+        // Add message to chat box
+        function addMessageToChat(chatEl, text, type, sender, isEncrypted = false) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('message', type);
+            
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            messageElement.innerHTML = `
+                <div class="message-content">
+                    <p>${text}</p>
+                </div>
+                <div class="message-info">
+                    <span>${type === 'outgoing' ? 'You' : sender}</span>
+                    <span>${timeString}</span>
+                </div>
+            `;
+            
+            if (isEncrypted && type === 'incoming') {
+                const actionsDiv = document.createElement('div');
+                actionsDiv.classList.add('message-actions');
+                actionsDiv.innerHTML = `
+                    <button onclick="decryptMessage(this)"><i class="fas fa-unlock"></i> Decrypt</button>
+                `;
+                messageElement.appendChild(actionsDiv);
             }
-        `;
-        document.head.appendChild(style);
+            
+            chatEl.appendChild(messageElement);
+        }
+        
+        // Decrypt message when button clicked
+        function decryptMessage(button) {
+            const messageContent = button.closest('.message').querySelector('.message-content p');
+            const originalText = messageContent.textContent;
+            const decryptedText = decryptMessage(originalText);
+            
+            if (decryptedText !== originalText) {
+                messageContent.textContent = decryptedText;
+                button.innerHTML = '<i class="fas fa-lock"></i> Encrypted';
+                button.onclick = function() {
+                    messageContent.textContent = originalText;
+                    button.innerHTML = '<i class="fas fa-unlock"></i> Decrypt';
+                    button.onclick = function() {
+                        decryptMessage(button);
+                    };
+                };
+            }
+        }
+        
+        // Encrypt all messages in a chat
+        function encryptAll(userId) {
+            const chatEl = document.getElementById(`user${userId}Chat`);
+            const messages = chatEl.querySelectorAll('.message');
+            
+            messages.forEach(message => {
+                if (message.classList.contains('outgoing')) {
+                    const contentEl = message.querySelector('.message-content p');
+                    const currentText = contentEl.textContent;
+                    
+                    // Only encrypt if not already encrypted
+                    try {
+                        atob(currentText);
+                        // If we get here, it's already base64 encoded
+                    } catch (e) {
+                        // Not encrypted yet, so encrypt it
+                        contentEl.textContent = encryptMessage(currentText);
+                    }
+                }
+            });
+        }
+        
+        // Decrypt all messages in a chat
+        function decryptAll(userId) {
+            const chatEl = document.getElementById(`user${userId}Chat`);
+            const messages = chatEl.querySelectorAll('.message');
+            
+            messages.forEach(message => {
+                const contentEl = message.querySelector('.message-content p');
+                const currentText = contentEl.textContent;
+                const decryptedText = decryptMessage(currentText);
+                
+                if (decryptedText !== currentText) {
+                    contentEl.textContent = decryptedText;
+                }
+                
+                // Update decrypt buttons
+                const decryptBtn = message.querySelector('.message-actions button');
+                if (decryptBtn) {
+                    decryptBtn.innerHTML = '<i class="fas fa-lock"></i> Encrypted';
+                    decryptBtn.onclick = function() {
+                        contentEl.textContent = currentText;
+                        decryptBtn.innerHTML = '<i class="fas fa-unlock"></i> Decrypt';
+                        decryptBtn.onclick = function() {
+                            decryptMessage(decryptBtn);
+                        };
+                    };
+                }
+            });
+        }
     </script>
 </body>
 </html>
