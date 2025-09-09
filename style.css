@@ -76,7 +76,8 @@
 
         .comms-container {
             display: flex;
-            min-height: 500px;
+            min-height: 900px;
+            overflow-x: visible;
         }
 
         .user-panel {
